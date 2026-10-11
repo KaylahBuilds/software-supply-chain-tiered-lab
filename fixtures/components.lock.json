@@ -1,0 +1,11 @@
+{
+  "schema": "lab-component-lock/v1",
+  "components": [
+    {
+      "name": "synthetic-greeting",
+      "version": "1.0.0",
+      "path": "greeting.py",
+      "sha256": "97a1f668f796a13ad5cdfb5dc1bd7b2ed3d6bc997b7e5fbb93a23c7740b75dee"
+    }
+  ]
+}

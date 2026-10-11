@@ -1,0 +1,45 @@
+name: Offline supply chain lab checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out without persisting credentials
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6, reviewed 2026-10-10
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6, reviewed 2026-10-10
+        with:
+          python-version: '3.12'
+      - name: Test input and artifact mutations
+        run: python -m unittest discover -s tests -v
+      - name: Build fixture artifacts
+        run: python -m lab.build --output artifacts-ci
+      - name: Verify local consistency, not authenticity
+        run: python -m lab.verify --output artifacts-ci
+      - name: Check the optional verifier without signing or credentials
+        shell: bash
+        run: |
+          sh -n tier-3-verification/verify-release.sh
+          sh tier-3-verification/verify-release.sh --check
+          expect_usage_failure() {
+            set +e
+            sh tier-3-verification/verify-release.sh "$@"
+            status=$?
+            set -e
+            test "$status" -eq 2
+          }
+          expect_usage_failure
+          expect_usage_failure artifacts-ci/source.zip not-a-commit
+          expect_usage_failure artifacts-ci/source.zip 0000000000000000000000000000000000000000
+          expect_usage_failure https://example.invalid/source.zip 1111111111111111111111111111111111111111

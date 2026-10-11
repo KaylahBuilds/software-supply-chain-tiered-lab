@@ -1,0 +1,56 @@
+# INACTIVE TEMPLATE. Review authority/publication implications before copying to:
+# .github/workflows/release-provenance.yml
+# This does not establish a SLSA level or activate a deployment gate.
+name: Reviewed fixture provenance example
+
+on:
+  workflow_dispatch:
+    inputs:
+      authorize_public_attestation:
+        description: 'I reviewed the artifact, metadata audience, and signing permissions'
+        type: boolean
+        required: true
+        default: false
+
+permissions: {}
+
+jobs:
+  build-and-attest:
+    if: github.ref == 'refs/heads/main' && inputs.authorize_public_attestation == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Check out the event's immutable source revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Test before packaging
+        run: python -m unittest discover -s tests -v
+      - name: Build synthetic artifact
+        run: python -m lab.build --output artifacts
+      - name: Check local consistency before requesting provenance
+        run: python -m lab.verify --output artifacts
+      - name: Generate GitHub build provenance for the exact archive
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: artifacts/source.zip
+      - name: Retain the archive and clearly unsigned inventory/record
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: reviewed-fixture-${{ github.sha }}
+          path: |
+            artifacts/source.zip
+            artifacts/bom.cdx.json
+            artifacts/build-record.json
+          if-no-files-found: error
+          retention-days: 7
+          include-hidden-files: false
