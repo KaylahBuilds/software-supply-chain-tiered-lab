@@ -17,7 +17,7 @@ The tests include a deliberately passing consistency check after an attacker rew
 
 The read-only workflow runs the Python suite, fixture build, and consistency verification. It also checks the optional verifier's POSIX syntax, CLI flag availability, and rejection of missing/invalid arguments, an all-zero commit, and an artifact URL. None of those preflight checks retrieves or authenticates an attestation.
 
-See the [workflow runs](https://github.com/KaylahBuilds/software-supply-chain-tiered-lab/actions/workflows/checks.yml) for executed commit-specific results. Configuration is not itself evidence of a passing run.
+The [first GitHub-hosted CI run](https://github.com/KaylahBuilds/software-supply-chain-tiered-lab/actions/runs/38109357145) passed on commit `ab1cbad04dbbeccf8af839c448e162c650da95ea`, including the Python tests, build, consistency check, shell syntax, CLI capability preflight, and negative argument checks. See the [workflow runs](https://github.com/KaylahBuilds/software-supply-chain-tiered-lab/actions/workflows/checks.yml) for later commit-specific results. Configuration is not itself evidence of a passing run.
 
 ## Not verified or activated
 

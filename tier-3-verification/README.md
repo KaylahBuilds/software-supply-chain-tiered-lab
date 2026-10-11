@@ -128,11 +128,12 @@ signature checker. [Sigstore verification documentation](https://docs.sigstore.d
 ## Authoring validation status
 
 CLI version/help and required flag availability were inspected without login.
-The authoring sandbox blocked Git Bash before it could execute; local shell
-syntax, script preflight, and negative input checks therefore remain **not run**.
-Those local checks are separate from the read-only GitHub CI preflight;
-see [VALIDATION.md](../VALIDATION.md) and the linked workflow results. Both are separate from
-signature verification. No release workflow was activated, no attestation was
+The authoring sandbox blocked local Git Bash execution. The read-only
+[GitHub-hosted CI run](https://github.com/KaylahBuilds/software-supply-chain-tiered-lab/actions/runs/38109357145)
+subsequently passed POSIX syntax, CLI capability preflight, and negative argument
+checks. These checks are separate from signature verification; see
+[VALIDATION.md](../VALIDATION.md) for the exact tested revision and limitations.
+No release workflow was activated, no attestation was
 generated, and no real signed artifact was verified. Record a future live result
 before claiming the signed release path works; unsigned lab data is not
 substitute trust evidence.
